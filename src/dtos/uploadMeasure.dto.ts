@@ -13,9 +13,11 @@ class UploadMeasureDto {
 
   @Type(() => Date)
   @IsDate()
+  @IsNotEmpty()
   measure_datetime!: Date
 
   @IsEnum(['WATER', 'GAS'])
+  @IsNotEmpty()
   measure_type!: 'WATER' | 'GAS';
 }
 
