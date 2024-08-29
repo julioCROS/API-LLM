@@ -1,10 +1,12 @@
 import 'reflect-metadata';
 import { IsString, IsEnum, IsDate, IsNotEmpty } from 'class-validator';
+import { IsBase64 } from '../validators/is-base64.validator';
 import { Type } from 'class-transformer';
 
 class UploadMeasureDto {
   @IsString()
   @IsNotEmpty()
+  @IsBase64({ message: 'Image must be a valid Base64 string' })
   image!: string;
 
   @IsString()

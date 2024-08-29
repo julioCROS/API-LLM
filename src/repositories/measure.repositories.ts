@@ -1,6 +1,6 @@
 import { Measure } from '../models/measure.model';
 import { gemini } from '../gemini.config';
-import { generate_uuid, handleMeasureValue, isSameMonth } from '../utils';
+import { generateUuid, handleMeasureNumericValue, isSameMonth } from '../utils';
 
 const imgbbUploader = require('imgbb-uploader');
 
@@ -15,20 +15,22 @@ class MeasureRepository {
       }
     }
 
+    const base64String = request.image.split(';base64,').pop()?.replace(/\s/g, '') as string;
+
     try {
       const result = await gemini.generateContent([prompt,
         {
           inlineData: {
-            data: request.image,
+            data: base64String,
             mimeType: 'image/jpeg',
           }
         }
       ]);
 
 
-      const measure_value = handleMeasureValue(result.response.text());
-      const measure_uuid = generate_uuid();
-      const image_url = await this.uploadImageToImgBB(request.image, measure_uuid);
+      const measure_value = handleMeasureNumericValue(result.response.text());
+      const measure_uuid = generateUuid();
+      const image_url = await this.uploadImageToImgBB(base64String, measure_uuid);
 
       if (!image_url) {
         return {
