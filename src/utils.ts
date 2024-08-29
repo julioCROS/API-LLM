@@ -9,7 +9,10 @@ function handleMeasureNumericValue(value: string) {
 }
 
 function isSameMonth(date1: Date, date2: Date) {
-  return date1.getMonth() === date2.getMonth() && date1.getFullYear() === date2.getFullYear();
+  return (
+    date1.getUTCFullYear() === date2.getUTCFullYear() &&
+    date1.getUTCMonth() === date2.getUTCMonth()
+  );
 }
 
 export { generateUuid, handleMeasureNumericValue, isSameMonth };
