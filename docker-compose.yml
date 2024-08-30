@@ -1,0 +1,12 @@
+services:
+  app:
+    build: .
+    container_name: api-llm-app
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run dev
