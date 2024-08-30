@@ -121,41 +121,46 @@ class MeasureRepository {
     };
   }
 
-  async list(customer_code: string, measure_type: string) {
-    measure_type = measure_type.toUpperCase();
-
-    if (measure_type && !['WATER', 'GAS'].includes(measure_type)) {
-      return {
-        error_code: 'INVALID_TYPE',
-        error_description: 'Tipo de medição não permitida',
-      };
+  async list(customer_code: string, measure_type?: string) {
+    
+    if (measure_type) {
+        measure_type = measure_type.toUpperCase();
     }
 
-    const measures = await Measure.find({
-      customer_code: customer_code,
-      measure_type: measure_type,
-    });
+    if (measure_type && !['WATER', 'GAS'].includes(measure_type)) {
+        return {
+            error_code: 'INVALID_TYPE',
+            error_description: 'Tipo de medição não permitida',
+        };
+    }
+
+    const query: any = { customer_code: customer_code };
+
+    if (measure_type) {
+        query.measure_type = measure_type;
+    }
+
+    const measures = await Measure.find(query);
 
     if (!measures || measures.length === 0) {
-      return {
-        error_code: 'MEASURE_NOT_FOUND',
-        error_description: 'Nenhuma leitura encontrada',
-      };
+        return {
+            error_code: 'MEASURE_NOT_FOUND',
+            error_description: 'Nenhuma leitura encontrada',
+        };
     }
 
     return {
-      customer_code: customer_code,
-      measures: measures.map(measure => {
-        return {
-          measure_uuid: measure.measure_uuid,
-          measure_datetime: measure.measure_datetime,
-          measure_type: measure.measure_type,
-          has_confirmed: measure.has_confirmed,
-          image_url: measure.image_url,
-        };
-      })
-    }
-  }
+        customer_code: customer_code,
+        measures: measures.map(measure => ({
+            measure_uuid: measure.measure_uuid,
+            measure_datetime: measure.measure_datetime,
+            measure_type: measure.measure_type,
+            has_confirmed: measure.has_confirmed,
+            image_url: measure.image_url,
+        }))
+    };
+}
+
 }
 
 export const measureRepository = new MeasureRepository();
